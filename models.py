@@ -32,9 +32,20 @@ class Question(db.Model, DatabaseItem):
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(), nullable=False)
     user = db.Column(db.String(), nullable=True)     # TODO: implement user functionality
-    unique_id = db.Column(db.String(32), unique=True, nullable=False,
+    uuid = db.Column(db.String(32), unique=True, nullable=False,
         default=str(uuid.uuid4().hex))
     answers = db.relationship('Answer', backref='question', lazy=True, cascade='all, delete-orphan')
+
+    def __repr__(self):
+        return f"<Question {self.id} with UUID {self.unique_id}: {self.text}>"
+
+    def format(self):
+        return {
+            'question_text': self.text,
+            'question_answers': [
+                a.format() for a in Answers.query.filter(Answer.question_uuid==self.uuid).all()
+            ]
+        }
 
 
 class Answer(db.Model, DatabaseItem):
@@ -42,7 +53,20 @@ class Answer(db.Model, DatabaseItem):
 
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(), nullable=False)
-    question_id = db.Column(db.String(32), db.ForeignKey('questions.unique_id'), nullable=False)
-    answer_id = db.Column(db.String(32), unique=True, nullable=False,
+    question_uuid = db.Column(db.String(32), db.ForeignKey('questions.unique_id'), nullable=False)
+    uuid = db.Column(db.String(32), unique=True, nullable=False,
         default=str(uuid.uuid4().hex))
     count = db.Column(db.Integer, nullable=False, default=0)
+
+    def increment_count(self):
+        self.count = self.count + 1
+        self.update
+
+    def __repr__(self):
+        return f"<Answer {self.id} with UUID {self.unique_id} from Question UUID {self.question_uuid}: {self.text}>"
+    
+    def format(self):
+        return {
+            'answer_text': self.text,
+            'count': self.count
+        }

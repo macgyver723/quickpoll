@@ -1,4 +1,5 @@
 import os
+import uuid
 from flask_sqlalchemy import SQLAlchemy
 
 database_path = os.environ['DATABASE_URL']

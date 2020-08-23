@@ -44,7 +44,7 @@ class Question(db.Model, DatabaseItem):
         return {
             'question_text': self.text,
             'question_answers': [
-                a.format() for a in Answers.query.filter(Answer.question_uuid==self.uuid).all()
+                a.format() for a in Answer.query.filter(Answer.question_uuid==self.uuid).all()
             ]
         }
 

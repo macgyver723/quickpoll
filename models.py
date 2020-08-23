@@ -38,7 +38,7 @@ class Question(db.Model, DatabaseItem):
     answers = db.relationship('Answer', backref='question', lazy=True, cascade='all, delete-orphan')
 
     def __repr__(self):
-        return f"<Question {self.id} with UUID {self.unique_id}: {self.text}>"
+        return f"<Question {self.id} with UUID {self.uuid}: {self.text}>"
 
     def format(self):
         return {
@@ -54,7 +54,7 @@ class Answer(db.Model, DatabaseItem):
 
     id = db.Column(db.Integer, primary_key=True)
     text = db.Column(db.String(), nullable=False)
-    question_uuid = db.Column(db.String(32), db.ForeignKey('questions.unique_id'), nullable=False)
+    question_uuid = db.Column(db.String(32), db.ForeignKey('questions.uuid'), nullable=False)
     uuid = db.Column(db.String(32), unique=True, nullable=False,
         default=str(uuid.uuid4().hex))
     count = db.Column(db.Integer, nullable=False, default=0)
@@ -64,7 +64,7 @@ class Answer(db.Model, DatabaseItem):
         self.update
 
     def __repr__(self):
-        return f"<Answer {self.id} with UUID {self.unique_id} from Question UUID {self.question_uuid}: {self.text}>"
+        return f"<Answer {self.id} with UUID {self.uuid} from Question UUID {self.question_uuid}: {self.text}>"
     
     def format(self):
         return {

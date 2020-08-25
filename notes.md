@@ -17,6 +17,6 @@ python manage.py db migrate # analyze any changes to db since last upgrade
 python manage.py db upgrade # lock in the changes from the generated alembic file
 ```
 
-In subsequent updates to the db, only use `migrate` and `upgrade`. Pretty sure there is a `downgrade` command or something like it. 
+In subsequent updates to the db, only use `migrate` and `upgrade`. Pretty sure there is a `downgrade` command or something like it.
 
 Also, it can be helpful to check the generated python upgrade file in the `/migrations/versions` directory and make any necessary adjustments.

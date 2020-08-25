@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<head>
+    <title>Quick Poll</title>
+    <style>
+        html {
+            font-size: 10px;
+        }
+        body {
+            height: 95vh;
+            display: flex;
+            align-items: center;
+        }
+        .poll-answers {
+            padding: 10px 15px;
+        }
+        .answer {
+            font-size: 2em;
+        }
+        #btn-add-answer {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+<div class="poll-form">
+    <form>
+        <div class="poll-question">
+            <input type="text" class="question" placeholder="Question">
+        </div>
+        <div class="poll-answers">
+            <input type="text" class="answer" placeholder="Answer">
+        </div>
+        <div class="add-answer">
+            <input type="button" id="btn-add-answer" value="+" class="add-answer">
+        </div>
+        <div>
+            <input class="submit" id="btn-start-poll" type="button" value="Start Poll">
+        </div>
+    </form>
+
+</body>
+<script>
+    // const pollAnswers = document.querySelector("poll-answers")
+    document.querySelector('#btn-add-answer').onclick = function(e) {
+        console.log("add answer clicked")
+        const newAnswer = document.createElement('input')
+        newAnswer.type = "text"
+        newAnswer.className = "answer"
+        newAnswer.placeholder = "Answer"
+        // let newAnswerHTML = '<input type="text" class="answer" placeholder="Answer">'
+        // newAnswer.innerHTML = newAnswerHTML
+        document.querySelector(".poll-answers").appendChild(newAnswer)
+    }
+    document.querySelector('#btn-start-poll').onclick = function(e) {
+        console.log("start poll clicked!")
+        const question = document.querySelector('.question').value
+        const answersNodes = document.querySelectorAll('.answer')
+        let answers = []
+        answersNodes.forEach(element => answers.push(element.value))
+        console.log("Question: " + question)
+        console.log("Answers: " + answers)
+        // 1. gather questions and answers
+        // 2. AJAX POST to server
+        // 3. update dom
+    }
+</script>

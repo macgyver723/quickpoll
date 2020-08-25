@@ -69,17 +69,20 @@ def create_app(test_config=None):
             'uuid': new_question.uuid
         })
     
-    @app.route('/answers/<int:answer_id>')
+    @app.route('/answers/<int:answer_id>', methods=['GET', 'POST'])
     def get_answer(answer_id):
         answer = Answer.query.filter(Answer.id==answer_id).one_or_none()
 
         if answer is None:
             abort(404)
-        
+            
+        if request.method == 'POST':
+            answer.increment_count()
+    
         return jsonify({
-            "success": True,
-            "answer": answer.format()
-        })
+                "success": True,
+                "answer": answer.format()
+            })
 
     return app
 

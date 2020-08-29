@@ -88,7 +88,17 @@ def create_app(test_config=None):
                 "answer": answer.format()
             })
     
-    
+    @app.route('/answers')
+    def vote_for_answer():
+        uuid = request.args.get('uuid')
+        answer = Answer.query.filter(Answer.uuid==uuid).one_or_none()
+
+        if answer is None:
+            abort(404)
+        
+        answer.increment_count()
+
+        return "Current count of {} is {}".format(answer.text, answer.count)
 
     return app
 

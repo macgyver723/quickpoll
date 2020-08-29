@@ -11,10 +11,18 @@
             align-items: center;
         }
         .poll-answers {
-            padding: 10px 15px;
+            align-items: center;
+            padding: 3em 1em;
+        }
+        .card {
+            display: inline-block;
+        }
+        .card > img {
+            visibility: hidden;
         }
         .answer {
             font-size: 2em;
+            margin: 0 1em;
         }
         #btn-add-answer {
             display: inline-block;
@@ -28,7 +36,12 @@
             <input type="text" class="question" placeholder="Question">
         </div>
         <div class="poll-answers">
-            <input type="text" class="answer" placeholder="Answer">
+            <div class="card">
+                <img>
+                <div class="container">
+                    <input type="text" class="answer" placeholder="Answer">
+                </div>
+            </div>
         </div>
         <div class="add-answer">
             <input type="button" id="btn-add-answer" value="+" class="add-answer">
@@ -43,13 +56,22 @@
     // const pollAnswers = document.querySelector("poll-answers")
     document.querySelector('#btn-add-answer').onclick = function(e) {
         console.log("add answer clicked")
+        const answerCard = document.createElement('div')
+        answerCard.className = 'card'
+        
+        const answerContainer = document.createElement('div')
+        answerContainer.className = 'container'
+
         const newAnswer = document.createElement('input')
         newAnswer.type = "text"
         newAnswer.className = "answer"
         newAnswer.placeholder = "Answer"
-        // let newAnswerHTML = '<input type="text" class="answer" placeholder="Answer">'
-        // newAnswer.innerHTML = newAnswerHTML
-        document.querySelector(".poll-answers").appendChild(newAnswer)
+        
+        document.querySelector(".poll-answers").appendChild(answerCard)
+        answerCard.appendChild(document.createElement('img'))
+        answerCard.appendChild(answerContainer)
+        answerContainer.appendChild(newAnswer)
+        
     }
     document.querySelector('#btn-start-poll').onclick = function(e) {
         console.log("start poll clicked!")
@@ -61,6 +83,32 @@
         console.log("Answers: " + answers)
         // 1. gather questions and answers
         // 2. AJAX POST to server
-        // 3. update dom
+        fetch(
+            '/questions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'questionText': 'question',
+                    'answers': answers
+                })
+            }
+        )
+        .then(response => response.json())
+        .then(jsonResponse => {
+            console.log(jsonResponse)
+            const answerCards = document.querySelectorAll('.card')
+
+            for (let i = 0; i < answerCards.length; i++) {
+                let img = answerCards[i].querySelector('img')
+                img.src = 
+                    'http://api.qrserver.com/v1/create-qr-code/?data=' +
+                    window.location.href + 
+                    'answers?uuid=' + 
+                    jsonResponse['answers_uuid'][i]
+                img.style.visibility = 'visible';
+            }
+        })
     }
 </script>

@@ -1,5 +1,5 @@
 import os, uuid
-from flask import Flask, abort, jsonify, request
+from flask import Flask, abort, jsonify, request, render_template
 from flask_cors import CORS
 
 from models import setup_db, Question, Answer
@@ -24,7 +24,7 @@ def create_app(test_config=None):
 
     @app.route('/')
     def index():
-        return "not yet implemented"
+        return render_template('index.html')
     
     @app.route('/questions/<int:question_id>')
     def get_question(question_id):
@@ -50,14 +50,17 @@ def create_app(test_config=None):
                 uuid=str(uuid.uuid4().hex)
             )
             new_question.insert()
-
+            
+            new_answers = []
             for answer_text in answers:
                 print(f"\tcreating answer with text {answer_text}")
-                Answer(
-                    text=answer_text,
-                    question_uuid=new_question.uuid,
-                    uuid=str(uuid.uuid4().hex)
-                ).insert()
+                new_answer = Answer(
+                        text=answer_text,
+                        question_uuid=new_question.uuid,
+                        uuid=str(uuid.uuid4().hex)
+                    )
+                new_answers.append(new_answer)
+                new_answer.insert()
         
         except Exception as e:
             print(f"Exception {e} in add_question()")
@@ -66,7 +69,8 @@ def create_app(test_config=None):
         print(f"Successfully added {new_question}")
         return jsonify({
             'success': True,
-            'uuid': new_question.uuid
+            'question_uuid': new_question.uuid,
+            'answers_uuid': [a.uuid for a in new_answers]
         })
     
     @app.route('/answers/<int:answer_id>', methods=['GET', 'POST'])
@@ -83,6 +87,8 @@ def create_app(test_config=None):
                 "success": True,
                 "answer": answer.format()
             })
+    
+    
 
     return app
 

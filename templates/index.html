@@ -16,8 +16,12 @@
         }
         .card {
             display: inline-block;
+            text-align: center;
         }
-        .card > img {
+        .qr-code {
+            margin: auto;
+        }
+        .show-on-start {
             visibility: hidden;
         }
         .answer {
@@ -37,9 +41,10 @@
         </div>
         <div class="poll-answers">
             <div class="card">
-                <img>
+                <img class="qr-code show-on-start">
                 <div class="container">
                     <input type="text" class="answer" placeholder="Answer">
+                    <p class="answer-count show-on-start"></p>
                 </div>
             </div>
         </div>
@@ -58,6 +63,10 @@
         console.log("add answer clicked")
         const answerCard = document.createElement('div')
         answerCard.className = 'card'
+
+        const qrImg = document.createElement('img')
+        qrImg.classList.add('show-on-start')
+        qrImg.classList.add('qr-code')
         
         const answerContainer = document.createElement('div')
         answerContainer.className = 'container'
@@ -66,23 +75,25 @@
         newAnswer.type = "text"
         newAnswer.className = "answer"
         newAnswer.placeholder = "Answer"
+
+        const answerCount = document.createElement('p')
+        answerCount.classList.add('answer-count')
+        answerCount.classList.add('show-on-start')
         
         document.querySelector(".poll-answers").appendChild(answerCard)
-        answerCard.appendChild(document.createElement('img'))
+        answerCard.appendChild(qrImg)
         answerCard.appendChild(answerContainer)
         answerContainer.appendChild(newAnswer)
+        answerContainer.appendChild(answerCount)
         
     }
     document.querySelector('#btn-start-poll').onclick = function(e) {
-        console.log("start poll clicked!")
         const question = document.querySelector('.question').value
         const answersNodes = document.querySelectorAll('.answer')
         let answers = []
         answersNodes.forEach(element => answers.push(element.value))
-        console.log("Question: " + question)
-        console.log("Answers: " + answers)
-        // 1. gather questions and answers
-        // 2. AJAX POST to server
+        
+        // post Q & A to database
         fetch(
             '/questions', {
                 method: 'POST',
@@ -99,16 +110,26 @@
         .then(jsonResponse => {
             console.log(jsonResponse)
             const answerCards = document.querySelectorAll('.card')
-
+            // Add QR codes and poll count HTML
             for (let i = 0; i < answerCards.length; i++) {
+                let uuid = jsonResponse['answers_uuid'][i]
                 let img = answerCards[i].querySelector('img')
                 img.src = 
                     'http://api.qrserver.com/v1/create-qr-code/?data=' +
                     window.location.href + 
                     'answers?uuid=' + 
-                    jsonResponse['answers_uuid'][i]
-                img.style.visibility = 'visible';
+                    uuid
+
+                let p = answerCards[i].querySelector('p')
+                p.setAttribute('id', uuid)
+                p.innerText = 0;
             }
+            document.querySelectorAll(".show-on-start")
+                .forEach(element => 
+                    element.style.visibility = "visible")
         })
+    }
+    function update_poll() {
+
     }
 </script>
